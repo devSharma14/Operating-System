@@ -70,7 +70,6 @@ int main() {
     bool vis[n];
     int completed = 0;
     int cur_time = 0;
-    bool is_first = true;
     int q[n+1];
     int sum_tat = 0 , sum_wt = 0 , sum_rt = 0;
 
@@ -101,20 +100,10 @@ int main() {
 
     while(completed != n) {
         idx = dequeue(q, n);
-        if(idx  == -1) {
-            int next_at = 1e8;
-            for(int i=0; i<n; i++) {
-                if(remaining_bt[i] > 0 && arr[i].at > cur_time) {
-                    next_at = max(next_at, arr[i].at);
-                }
-            }
-            cur_time = next_at;
-            continue;
-        }
 
         if(remaining_bt[idx] == arr[idx].bt) {
+            // This condition will be hit once for every process. (When the process arrives for the 1st time)
             arr[idx].st = max(cur_time, arr[idx].at);
-            is_first = false;
             cur_time = arr[idx].st;
         }
 
@@ -130,12 +119,12 @@ int main() {
             arr[idx].tat = arr[idx].ct - arr[idx].at;
             arr[idx].wt = arr[idx].tat - arr[idx].bt;
             arr[idx].rt = arr[idx].st - arr[idx].at;
-
             sum_tat += arr[idx].tat;
             sum_wt += arr[idx].wt;
             sum_rt += arr[idx].rt;
         }
 
+        // i am pushing the processes in queue which have arrived until current time
         for(int i=0; i<n; i++) {
             if(arr[i].at <= cur_time && remaining_bt[i] > 0 && vis[i] == false) {
                 enqueue(q, i, n);
@@ -147,6 +136,7 @@ int main() {
             enqueue(q, idx, n);
         }
 
+        // Push all the processes which are left into the queue
         if(isEmpty()) {
             for(int i=1; i<n; i++) {
                 if(remaining_bt[i] > 0 && vis[i] == false) {
