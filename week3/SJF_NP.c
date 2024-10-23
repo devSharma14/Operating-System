@@ -9,6 +9,7 @@ struct process {
     int ct;     // completion time
     int tat;    // turn around time
     int wt;     // waiting time
+    int rt;     // remaining time
 };
 
 typedef struct process process;
@@ -47,51 +48,62 @@ int main() {
         scanf("%d", &arr[i].at);
         printf("Burst time -> ");
         scanf("%d", &arr[i].bt);
+        arr[i].rt = arr[i].bt; // Initialize remaining time as burst time
     }
 
-    // sorting acc to at
+    // sorting processes by arrival time
     qsort(arr, n, sizeof(process), comparator);
 
     int completed = 0, curTime = 0;
-    float total_wt = 0.0 , total_tat = 0.0;
-
+    float total_wt = 0.0, total_tat = 0.0;
     int isCompleted[n]; // checks whether a process has been completed or not
-
     for(int i=0; i<n; i++) {
         isCompleted[i] = 0;
     }
 
-    while(completed != n) {
-        int min_bt = 1e9;
+    int lastProcess = -1; // To check if a new process starts
+    while (completed != n) {
+        int min_rt = 1e9;
         int selected = -1;
 
         for(int i=0; i<n; i++) {
             if(arr[i].at <= curTime && isCompleted[i] == 0) {
-                if(arr[i].bt < min_bt) {
-                    min_bt = arr[i].bt;
+                if(arr[i].rt < min_rt) {
+                    min_rt = arr[i].rt;
+                    selected = i;
+                }
+                if(arr[i].rt == min_rt && arr[i].at < arr[selected].at) {
                     selected = i;
                 }
             }
         }
 
-        if(selected == -1) {
+        if (selected == -1) {
             curTime++;
-        }
-        else {
-            arr[selected].st = curTime;
-            arr[selected].ct = arr[selected].st + arr[selected].bt;
-            arr[selected].tat = arr[selected].ct - arr[selected].at;
-            arr[selected].wt = arr[selected].tat - arr[selected].bt;
+        } else {
+            if(lastProcess != selected) {
+                arr[selected].st = curTime; // Start time is set only the first time the process is selected
+            }
 
-            total_wt += arr[selected].wt;
-            total_tat += arr[selected].tat;
+            curTime++; // Move time forward by 1 unit
+            arr[selected].rt--; // Decrement remaining time
 
-            curTime = arr[selected].ct;
-            isCompleted[selected] = 1;
-            completed++;
+            if (arr[selected].rt == 0) {
+                arr[selected].ct = curTime; // Completion time
+                arr[selected].tat = arr[selected].ct - arr[selected].at; // Turnaround time
+                arr[selected].wt = arr[selected].tat - arr[selected].bt; // Waiting time
+
+                total_wt += arr[selected].wt;
+                total_tat += arr[selected].tat;
+                isCompleted[selected] = 1; // Mark the process as completed
+                completed++; // Increment completed count
+            }
+
+            lastProcess = selected; // Keep track of the currently running process
         }
     }
 
+    // Output the results
     printf("\nProcess\tAT\tBT\tST\tCT\tTAT\tWT\n");
     for(int i=0; i<n; i++) {
         printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n", arr[i].pid, arr[i].at, arr[i].bt, arr[i].st, arr[i].ct, arr[i].tat, arr[i].wt);
