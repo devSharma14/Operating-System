@@ -33,28 +33,19 @@ void printGanttChart(process arr[], int n) {
 }
 
 int main() {
+    printf("\nName\t: DEV SHARMA\nSection\t: A1\nRoll no : 21\n\n");
     int n;
     printf("Enter the number of processes -> ");
     scanf("%d", &n);
-
     process arr[n];
-
     for(int i=0; i<n; i++) {
         printf("Enter details of process %d: \n", i+1);
-        printf("Process ID -> ");
-        scanf("%d", &arr[i].pid);
-        printf("Arrival time -> ");
-        scanf("%d", &arr[i].at);
-        printf("Burst time -> ");
-        scanf("%d", &arr[i].bt);
+        printf("Process ID | Arrival time | Burst time -> ");
+        scanf("%d %d %d", &arr[i].pid,&arr[i].at, &arr[i].bt);
     }
-
-    // sorting acc to at
     qsort(arr, n, sizeof(process), comparator);
-
     int curTime = 0;
     float total_wt = 0.0 , total_tat = 0.0;
-
     for(int i=0; i<n; i++) {
         if(curTime < arr[i].at) {
             curTime = arr[i].at;
@@ -67,16 +58,8 @@ int main() {
         total_wt += arr[i].wt;
         curTime = arr[i].ct;
     }
-
-    printf("\nProcess\tAT\tBT\tST\tCT\tTAT\tWT\n");
-    for(int i=0; i<n; i++) {
-        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n", arr[i].pid, arr[i].at, arr[i].bt, arr[i].st, arr[i].ct, arr[i].tat, arr[i].wt);
-    }
-
     printGanttChart(arr, n);
-    
     printf("\nAverage turnaround time : %.2f \n", total_tat/n);
     printf("\nAverage waiting time : %.2f \n", total_wt/n);
-
     return 0;
 }
