@@ -26,12 +26,41 @@ bool isPagePresent(int page, int set[], int size)
     return false;
 }
 
+int findLRUIndex(int set[], int req[], int size, int curIdx)
+{
+    int lruIdx = -1;
+    int mini = curIdx;
+    for (int i = 0; i < size; i++)
+    {
+        int lastUsedIndex = -1;
+        // find the idx at which set[i] was last time used
+        for (int j = curIdx - 1; j >= 0; j--)
+        {
+            if (req[j] == set[i])
+            {
+                lastUsedIndex = j;
+                break;
+            }
+        }
+        // if it was not used earlier then this is the least recently used
+        if (lastUsedIndex == -1)
+        {
+            return i;
+        }
+        if (lastUsedIndex < mini)
+        {
+            mini = lastUsedIndex;
+            lruIdx = i;
+        }
+    }
+    return lruIdx;
+}
+
 int pageFaults(int pages[], int req, int capacity)
 {
     int set[capacity];
     int size = 0;
     int totalFaults = 0;
-    int front = 0;
     for (int i = 0; i < req; i++)
     {
         int curPage = pages[i];
@@ -39,19 +68,15 @@ int pageFaults(int pages[], int req, int capacity)
         {
             continue;
         }
+        totalFaults++;
+        if (size < capacity)
+        {
+            set[size++] = curPage;
+        }
         else
         {
-            // check if queue is full or not
-            totalFaults++;
-            if (size == capacity)
-            {
-                front = (front + 1) % capacity;
-            }
-            else
-            {
-                size++;
-            }
-            set[(front + size - 1) % capacity] = curPage;
+            int lruIndex = findLRUIndex(set, pages, size, i);
+            set[lruIndex] = curPage;
         }
         printQueue(set, size);
     }
