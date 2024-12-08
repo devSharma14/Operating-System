@@ -1,53 +1,42 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include<stdio.h>
+#include<stdbool.h>
+#include<math.h>
 
-int main()
-{
-    int b, n;
-    printf("Enter the number of blocks available: ");
+int main() {
+    int n , b;
+    printf("Enter the no of blocks : ");
     scanf("%d", &b);
-    printf("Enter the number of processes: ");
+    printf("Enter the no of processes : ");
     scanf("%d", &n);
-    int blocks[b];
-    int process[n];
-    printf("Enter sizes of blocks: ");
-    for (int i = 0; i < b; i++)
-    {
-        scanf("%d", &blocks[i]);
+    printf("Enter the size of blocks : ");
+    int block[b] , p[n];
+    for(int i=0; i<b; i++) {
+        scanf("%d", &block[i]);
     }
-    printf("Enter sizes of processes: ");
-    for (int i = 0; i < n; i++)
-    {
-        scanf("%d", &process[i]);
+    printf("Enter the size of processes : ");
+    for(int i=0; i<n; i++) {
+        scanf("%d", &p[i]);
     }
-    for (int i = 0; i < n; i++)
-    {
-        int requiredSize = process[i];
-        int minIdx = -1; 
-        int minDiff = 1e8; 
-        bool flag = false;
-        for (int j = 0; j < b; j++)
-        {
-            if (blocks[j] >= requiredSize)
-            {
-                flag = true;
-                if (blocks[j] - requiredSize < minDiff)
-                {
-                    minDiff = blocks[j] - requiredSize;
-                    minIdx = j;
+    for(int i=0; i<n; i++) {
+        int reqSize = p[i];
+        bool found = false;
+        int idx = -1;
+        int minDiff = 1e8;
+        for(int j=0; j<b; j++) {
+            if(block[j] >= reqSize) {
+                found = true;
+                if(block[j] - reqSize < minDiff) {
+                    minDiff = block[j] - reqSize;
+                    idx = j;
                 }
             }
         }
-        if (flag && minIdx != -1)
-        {
-            blocks[minIdx] -= requiredSize;
-            printf("Process %d (%d) allocated to block %d.\n", i + 1, process[i], minIdx + 1);
+        if(found && idx != -1) {
+            block[idx] -= reqSize;
+            printf("%d <-> %d (idx : %d) \n", p[i], block[idx], idx+1);
         }
-        else
-        {
-            printf("Could not allocate block to process %d.\n", i + 1);
+        else {
+            printf("Could not allocate block to process %d.\n", p[i]);
         }
     }
-    return 0;
 }

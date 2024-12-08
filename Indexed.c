@@ -1,82 +1,82 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include<stdio.h>
+#include<stdbool.h>
+#include<math.h>
 
-typedef struct File
-{
+typedef struct F {
     char name;
-    int startBlock;
-    int numBlocks;
-    int blocks[200]; // Stores the actual block numbers
-} File;
+    int start;
+    int size;
+    int blocks[10];
+    bool isAllocated;
+} F;
 
-int main()
-{
+int main() {
     int n;
-    printf("Enter the number of files: ");
+    printf("Enter the no of files : ");
     scanf("%d", &n);
-
-    File files[n];
-    bool memoryBlocks[200] = {false}; // Represents the availability of memory blocks
-
-    for (int i = 0; i < n; i++)
-    {
-        getchar(); // Clear the buffer
-        printf("Enter name of the file: ");
-        scanf(" %c", &files[i].name);
-        printf("Enter the starting block of the file: ");
-        scanf("%d", &files[i].startBlock);
-        printf("Enter the number of blocks in the file: ");
-        scanf("%d", &files[i].numBlocks);
-
-        printf("Enter the blocks for the file: ");
-        for (int j = 0; j < files[i].numBlocks; j++)
-        {
-            int block;
-            scanf("%d", &block);
-            if (!memoryBlocks[block])
-            {
-                memoryBlocks[block] = true;
-                files[i].blocks[j] = block;
+    F f[n];
+    bool allocated[200];
+    for(int i=0; i<200; i++) {
+        allocated[i] = false;
+    }
+    for(int i=0; i<n; i++) {
+        bool flag = true;
+        getchar();
+        printf("\nEnter name of file : ");
+        scanf("%c", &f[i].name);
+        
+        printf("Enter starting block of file : ");
+        scanf("%d", &f[i].start);
+        
+        printf("Enter no of blocks file : ");
+        scanf("%d", &f[i].size);
+        
+        printf("Enter blocks of file : ");
+        for(int j=0; j<f[i].size; j++) {
+            int temp;
+            scanf("%d", &temp);
+            if(allocated[temp] == false) {
+                allocated[temp] = true;
+                f[i].blocks[j] = temp;
             }
-            else
-            {
-                printf("Block %d is already occupied. Allocation failed.\n", block);
-                files[i].blocks[j] = -1; // Mark as invalid block
+            else {
+                printf("Could not allocate block %d since it is already occupied. \n", temp);
+                f[i].blocks[j] = -1;
+                flag = false;
+                break;
             }
         }
-        printf("Memory successfully allocated for file %c.\n", files[i].name);
+        if(flag) {
+            f[i].isAllocated = true;
+            printf("\nMemory successfully allocated of file %c.\n", f[i].name);
+        }
+        else {
+            f[i].isAllocated = false;
+            printf("\nMemory could not be allocated to file %c. \n", f[i].name);
+        }
     }
-
-    char searchFile;
-    getchar(); // Clear the buffer
-    printf("Enter the file name to be searched: ");
-    scanf(" %c", &searchFile);
-
+    
     bool found = false;
-    for (int i = 0; i < n; i++)
-    {
-        if (files[i].name == searchFile)
-        {
+    
+    getchar();
+    char key;
+    printf("\nEnter the name of file to be searched : ");
+    scanf("%c", &key);
+    for(int i=0; i<n; i++) {
+        if(f[i].name == key && f[i].isAllocated == true) {
             found = true;
-            printf("File Name\tStart Block\tNo. of Blocks\tBlocks Occupied\n");
-            printf("%c\t\t%d\t\t%d\t\t", files[i].name, files[i].startBlock, files[i].numBlocks);
-            for (int j = 0; j < files[i].numBlocks; j++)
-            {
-                if (files[i].blocks[j] != -1)
-                {
-                    printf("%d ", files[i].blocks[j]);
+            printf("File found. Details : \n");
+            printf("Name : %c \t Starting block : %d \t Size : %d \n", f[i].name, f[i].start, f[i].size);
+            printf("Blocks occupied : ");
+            for(int j=0; j<f[i].size; j++) {
+                if(f[i].blocks[j] != -1) {
+                    printf("%d ", f[i].blocks[j]);
                 }
             }
-            printf("\n");
-            break;
         }
     }
-
-    if (!found)
-    {
-        printf("File not found.\n");
+    if(!found) {
+        printf("\nFile could not be found since it was not allocated any memory.\n");
     }
-
-    return 0;
+    printf("\nCode executed successfully. \n");
 }

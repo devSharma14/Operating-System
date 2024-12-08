@@ -1,102 +1,79 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include<stdio.h>
+#include<stdbool.h>
 
-typedef struct p
-{
+typedef struct F {
     char name;
     int start;
-    bool isAllocated;
     int size;
-} p;
+    bool allocated;
+} F;
 
-typedef struct allocationManager
-{
+typedef struct B {
     int blocks[200];
-} allocationManager;
+} B;
 
-void allocateFile(p *file, allocationManager *allocManager)
-{
-    int startIdx = file->start;
-    bool flag = true;
-
-    for (int i = startIdx; i < file->start + file->size; i++)
-    {
-        if (allocManager->blocks[i] == 1)
-        {
-            flag = false;
-            break;
-        }
-    }
-
-    if (flag)
-    {
-        for (int i = startIdx; i < file->start + file->size; i++)
-        {
-            allocManager->blocks[i] = 1;
-        }
-        printf("Memory successfully allocated to the file.\n");
-    }
-    else
-    {
-        printf("Memory could not be allocated to the file.\n");
-    }
-}
-
-int main()
-{
+int main() {
     int n;
-    printf("Enter the number of files: ");
+    printf("Enter the no of files : ");
     scanf("%d", &n);
-
-    p P[n];
-    allocationManager allocManager;
-
-    // Initialize the allocation blocks to 0 (free)
-    for (int i = 0; i < 200; i++)
-    {
-        allocManager.blocks[i] = 0;
+    F f[n];
+    B b;
+    for(int i = 0; i < 200; i++) {
+        b.blocks[i] = false;
     }
-
-    for (int i = 0; i < n; i++)
-    {
+    for(int i = 0; i < n; i++) {
         getchar();
-        printf("Enter name of the file: ");
-        scanf(" %c", &P[i].name);
-        printf("Enter the starting block of the file: ");
-        scanf("%d", &P[i].start);
-        printf("Enter size of the file: ");
-        scanf("%d", &P[i].size);
-        allocateFile(&P[i], &allocManager);
+        printf("\nEnter name of file : ");
+        scanf("%c", &f[i].name);
+        
+        printf("Enter starting block of file : ");
+        scanf("%d", &f[i].start);
+        
+        printf("Enter no of blocks file : ");
+        scanf("%d", &f[i].size);
+        
+        bool flag = true;
+        int taken = -1;
+        
+        for(int j = f[i].start; j < f[i].start + f[i].size; j++) {
+            if(b.blocks[j] == true) {  // Corrected here
+                flag = false;
+                taken = j;
+                f[i].allocated = false;
+                break;
+            }
+        }
+        
+        if(flag == false && taken != -1) {
+            printf("Couldn't allocate memory to file %c since block %d is already occupied. \n", f[i].name, taken);
+        } else {
+            f[i].allocated = true;
+            for(int j = f[i].start; j < f[i].start + f[i].size; j++) {
+                b.blocks[j] = true;
+            }
+            printf("Memory successfully allocated to file %c. \n", f[i].name);
+        }
     }
-
-    char key;
+    
     getchar();
-    printf("Enter the name of the file that you want to search: ");
-    scanf(" %c", &key);
-
-    bool flag = false;
-    for (int i = 0; i < n; i++)
-    {
-        if (P[i].name == key)
-        {
-            flag = true;
-            printf("Details of file are: \n");
-            printf("Name: %c \t Start: %d \t Ending block: %d \n", P[i].name, P[i].start, P[i].start + P[i].size - 1);
-            printf("Blocks allocated: ");
-            for (int j = P[i].start; j < P[i].start + P[i].size; j++)
-            {
+    char key;
+    printf("Enter the name of file to be searched : ");
+    scanf("%c", &key);
+    bool found = false;
+    for(int i = 0; i < n; i++) {
+        if(f[i].name == key && f[i].allocated == true) {
+            found = true;
+            printf("File found. Details : \n");
+            printf("Name : %c \t Starting block : %d \t Size : %d \n", f[i].name, f[i].start, f[i].size);
+            printf("Blocks occupied : ");
+            for(int j = f[i].start; j < f[i].start + f[i].size; j++) {
                 printf("%d ", j);
             }
-            printf("\n");
-            break;
         }
     }
-
-    if (!flag)
-    {
-        printf("File not found.\n");
+    if(!found) {
+        printf("Could not find file : %c since no memory was allocated to it. \n", key);
     }
-
+    printf("\nCode executed successfully. \n");
     return 0;
 }

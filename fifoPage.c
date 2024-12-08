@@ -1,77 +1,58 @@
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include<stdio.h>
+#include<stdbool.h>
+#include<stdlib.h>
 
-void printQueue(int set[], int size)
-{
-    printf("\nState of queue : \n");
-    for (int i = 0; i < size; i++)
-    {
+void printQueue(int size, int set[]) {
+    printf("\nState of queue : ");
+    for(int i=0; i<size; i++) {
         printf("%d ", set[i]);
     }
     printf("\n");
 }
 
-bool isPagePresent(int page, int set[], int size)
-{
-    bool flag = false;
-    for (int i = 0; i < size; i++)
-    {
-        if (set[i] == page)
-        {
+bool isPresent(int page, int size, int set[]) {
+    for(int i=0; i<size; i++) {
+        if(set[i] == page) {
             return true;
         }
     }
     return false;
 }
 
-int pageFaults(int pages[], int req, int capacity)
-{
-    int set[capacity];
+int pageFaults(int n, int req, int page[]) {
+    int set[n];
     int size = 0;
-    int totalFaults = 0;
+    int total = 0;
     int front = 0;
-    for (int i = 0; i < req; i++)
-    {
-        int curPage = pages[i];
-        if (isPagePresent(curPage, set, size) == true)
-        {
+    for(int i=0; i<req; i++) {
+        int curPage = page[i];
+        if(isPresent(curPage, size, set)) {
             continue;
         }
-        else
-        {
-            // check if queue is full or not
-            totalFaults++;
-            if (size == capacity)
-            {
-                front = (front + 1) % capacity;
-            }
-            else
-            {
-                size++;
-            }
-            set[(front + size - 1) % capacity] = curPage;
+        total++;
+        if(size == n) {
+            front = (front + 1) % n;
         }
-        printQueue(set, size);
+        else {
+            size++;
+        }
+        set[(front + size - 1) % n] = curPage;
+        printQueue(size, set);
     }
-    return totalFaults;
+    return total;
 }
 
-int main()
-{
-    int n;
-    printf("Enter no of frames available : ");
+int main() {
+    int n, req;
+    printf("Enter no of frames : ");
     scanf("%d", &n);
-    int req;
-    printf("Enter the number of page requests : ");
+    printf("Enter no of page requests : ");
     scanf("%d", &req);
-    int pages[req];
-    printf("Enter the page requests : \n");
-    for (int i = 0; i < req; i++)
-    {
-        scanf("%d", &pages[i]);
+    printf("Enter the size of page requests : ");
+    int page[req];
+    for(int i=0; i<req; i++) {
+        scanf("%d", &page[i]);
     }
-    int result = pageFaults(pages, req, n);
-    printf("Total no of page faults : %d \n", result);
+    int res = pageFaults(n, req, page);
+    printf("Total no of page faults are : %d \n", res);
 }

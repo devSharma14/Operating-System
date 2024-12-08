@@ -1,102 +1,80 @@
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include<stdio.h>
+#include<stdbool.h>
+#include<stdlib.h>
 
-void printQueue(int set[], int size)
-{
-    printf("\nState of queue : \n");
-    for (int i = 0; i < size; i++)
-    {
+void printQueue(int size, int set[]) {
+    printf("\nState of queue : ");
+    for(int i=0; i<size; i++) {
         printf("%d ", set[i]);
     }
     printf("\n");
 }
 
-bool isPagePresent(int page, int set[], int size)
-{
-    bool flag = false;
-    for (int i = 0; i < size; i++)
-    {
-        if (set[i] == page)
-        {
+bool isPresent(int page, int size, int set[]) {
+    for(int i=0; i<size; i++) {
+        if(set[i] == page) {
             return true;
         }
     }
     return false;
 }
 
-int findLRUIndex(int set[], int req[], int size, int curIdx)
-{
+int findLRUIndex(int size, int curIdx, int page[], int set[]) {
     int lruIdx = -1;
-    int mini = curIdx;
-    for (int i = 0; i < size; i++)
-    {
-        int lastUsedIndex = -1;
-        // find the idx at which set[i] was last time used
-        for (int j = curIdx - 1; j >= 0; j--)
-        {
-            if (req[j] == set[i])
-            {
-                lastUsedIndex = j;
+    int minIdx = curIdx;
+    for(int i=0; i<size; i++) {
+        int lastUsed = -1;
+        for(int j=curIdx-1; j>=0; j--) {
+            if(page[j] == set[i]) {
+                lastUsed = j;
                 break;
             }
         }
-        // if it was not used earlier then this is the least recently used
-        if (lastUsedIndex == -1)
-        {
+        if(lastUsed == -1) {
             return i;
         }
-        if (lastUsedIndex < mini)
-        {
-            mini = lastUsedIndex;
+        if(lastUsed < minIdx) {
             lruIdx = i;
+            minIdx = lastUsed;
         }
     }
     return lruIdx;
 }
 
-int pageFaults(int pages[], int req, int capacity)
-{
-    int set[capacity];
+int pageFaults(int n, int req, int page[]) {
+    int set[n];
     int size = 0;
-    int totalFaults = 0;
-    for (int i = 0; i < req; i++)
-    {
-        int curPage = pages[i];
-        if (isPagePresent(curPage, set, size) == true)
-        {
+    int total = 0;
+    for(int i=0; i<req; i++) {
+        int curPage = page[i];
+        if(isPresent(curPage, size, set)) {
             continue;
         }
-        totalFaults++;
-        if (size < capacity)
-        {
-            set[size++] = curPage;
+        total++;
+        if(size < n) {
+            set[size] = curPage;
+            size++;
         }
-        else
-        {
-            int lruIndex = findLRUIndex(set, pages, size, i);
-            set[lruIndex] = curPage;
+        else {
+            int lruIdx = findLRUIndex(size, i, page, set);
+            set[lruIdx] = curPage;
         }
-        printQueue(set, size);
+        printQueue(size, set);
     }
-    return totalFaults;
+    return total;
 }
 
-int main()
-{
-    int n;
-    printf("Enter no of frames available : ");
+int main() {
+    int n, req;
+    printf("Enter no of frames : ");
     scanf("%d", &n);
-    int req;
-    printf("Enter the number of page requests : ");
+    printf("Enter no of page requests : ");
     scanf("%d", &req);
-    int pages[req];
-    printf("Enter the page requests : \n");
-    for (int i = 0; i < req; i++)
-    {
-        scanf("%d", &pages[i]);
+    printf("Enter the size of page requests : ");
+    int page[req];
+    for(int i=0; i<req; i++) {
+        scanf("%d", &page[i]);
     }
-    int result = pageFaults(pages, req, n);
-    printf("Total no of page faults : %d \n", result);
+    int res = pageFaults(n, req, page);
+    printf("Total no of page faults are : %d \n", res);
 }
