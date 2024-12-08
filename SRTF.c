@@ -17,7 +17,6 @@ int comparatorAT(const void *a, const void *b)
 
 int main()
 {
-    printf("\nName\t: DEV SHARMA\nSection\t: A1\nRoll no : 21\n\n");
     int n;
     printf("Enter the no of processes :  ");
     scanf("%d", &n);

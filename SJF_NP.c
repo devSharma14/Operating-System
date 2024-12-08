@@ -40,7 +40,6 @@ void printGanttChart(process arr[], int n)
 
 int main()
 {
-    printf("\nName\t: DEV SHARMA\nSection\t: A1\nRoll no : 21\n\n");
     int n;
     printf("Enter the number of processes -> ");
     scanf("%d", &n);
